@@ -152,3 +152,71 @@ h1 {
         visibility: visible;
     }
 }
+
+.black {
+    margin: 0;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.inputPage {
+    background-color: #f4f4f4;
+    border-radius: 0.5rem;
+    aspect-ratio: 0.6;
+    /* width: 50%; */
+    height: 70%;
+    position:relative;
+}
+.pageContent{
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    outline: 1px solid red;
+}
+
+.inputCover{
+    width: 70%;
+}
+.inputDetails{
+    height: 100%;
+    width: 100%;
+    outline: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.inputBox {
+    width: 100%;
+    height: 2.5rem;
+}
+.inputBox-short {
+    width: 40%;
+    height: 2.5rem;
+}
+.together {
+    width: 100%;
+    height: 2.5rem;
+}
+#save{
+    border: none;
+    background-color: #000;
+    color: #f4f4f4;
+    width: 100%;
+    height: 2.5rem;
+}
+.close {
+    /* margin-left: auto; */
+    top: 0.2rem;
+    right: 0.2rem;
+    position:absolute;
+}
