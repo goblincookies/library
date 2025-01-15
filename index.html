@@ -32,7 +32,7 @@
             <div class="cover filled">
                 <div class="upper-icons">
                     <div class="delete button-sm button-action"><img class="icon-sm" src="images/delete.svg" alt=""></div>
-                    <div class="edit button-sm"><img class="icon-sm" src="images/edit.svg" alt=""></div>
+                    <div class="edit button-sm button-action"><img class="icon-sm" src="images/edit.svg" alt=""></div>
                 </div>
                 <div class="icon-lg check"><img class="" src="images/checkOutline.svg" alt=""></div>
             </div>
@@ -59,13 +59,34 @@
                         </div>
                     </div>
                     <div class="inputDetails">
-                        <input class="inputBox" type="text" id="title">
-                        <input class="inputBox" type="text" id="author">
-                        <div class="together" >
-                            <input class="inputBox-short"type="text" id="pages">
-                            <input type="checkbox" id="read"> read
+                        <div class="field width-100">
+                            <label for="title">Title</label>
+                            <input class="inputBox width-100" type="text" id="title" placeholder="Title">
                         </div>
-                        <button id="save">save</button>
+                        <div class="field width-100">
+                            <label for="author">Author</label>
+                            <input class="inputBox width-100" type="text" id="author" placeholder="Author">
+                        </div>
+                        <div class="together">
+                            <div class="field width-40">
+                                <label for="pages">Pages</label>
+                                <input class="inputBox width-100" type="text" id="pages" placeholder="40">
+                            </div>
+                            <div class="field width-40">
+                                <div class="toggle">
+                                    <label class="switch">
+                                        <input type="checkbox" id="rainbow-mode" name="rainbow-mode">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <p>Read</p>
+                                </div>
+                                <!-- <input type="checkbox" id="read">
+                                <label for="read">read</label> -->
+                            </div>
+                        </div>
+                        <div class="field width-100">
+                            <button id="save" >save</button>
+                        </div>
                     </div>
                 </div>
             </div>

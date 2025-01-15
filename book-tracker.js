@@ -2,20 +2,45 @@ const addBook = document.querySelector('#addBook');
 const content = document.querySelector('#content');
 const dialog = document.querySelector("#dialog");
 const close = document.querySelector('#close');
+const totalBooks = document.querySelector('#totalBooks');
+const percentRead = document.querySelector('#percentRead');
+const dialogSave = document.querySelector('#save');
 
-addBook.addEventListener("click", addBookToPage );
+let bookCount = 0;
+let readCount = 0;
+let isEditingEntry = false;
+
+dialogSave.addEventListener("click", saveBook );
+addBook.addEventListener("click", openDialog );
 close.addEventListener("click", closeDialog );
 
-updateTinyButtonListeners();
+setup();
+
+function setup() {
+    updateTinyButtonListeners();
+}
 
 function closeDialog() {
+    isEditingEntry = false;
     console.log("closing");
     dialog.close();
 }
+
 function openDialog( target ) {
     console.log("opening");
     dialog.showModal();
 }
+
+function saveBook() {
+    if (isEditingEntry) {
+        
+    }else{
+        
+        addBookToPage()
+    }
+    closeDialog();
+}
+
 function addBookToPage () {
     // get html
     // add to DOM
@@ -39,6 +64,7 @@ function bttnClick(e) {
         // console.log(target);
         target.remove();
     } else {
+        isEditingEntry = true;
         openDialog( target );
     }
     
