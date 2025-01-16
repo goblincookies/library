@@ -28,17 +28,17 @@
             </div>
         </div>
         
-        <div class="book shadow">
+        <div class="book shadow" id="id0">
             <div class="cover filled">
-                <div class="upper-icons">
+                <div class="hidden">
                     <div class="delete button-sm button-action"><img class="icon-sm" src="images/delete.svg" alt=""></div>
                     <div class="edit button-sm button-action"><img class="icon-sm" src="images/edit.svg" alt=""></div>
                 </div>
-                <div class="icon-lg check"><img class="" src="images/checkOutline.svg" alt=""></div>
+                <div class="icon-lg"><img class="check hidden" src="images/checkOutline.svg" alt=""></div>
             </div>
-            <div class="text-md">The Book of Three</div>
-            <div class="text-sm">By Lloyd Alexander</div>
-            <div class="text-sm text-sub">514 pages</div>
+            <div class="text-md title">The Book of Three</div>
+            <div class="text-sm author">By Lloyd Alexander</div>
+            <div class="text-sm text-sub pages">514 pages</div>
         </div>
         
         <div class="book">
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <dialog open id="dialog">
+    <dialog id="dialog">
         <div class="black">
             <div class="inputPage">
                 <div class="button-sm close" id="close"><img src="images/close.svg" alt=""></div>
@@ -61,21 +61,21 @@
                     <div class="inputDetails">
                         <div class="field width-100">
                             <label for="title">Title</label>
-                            <input class="inputBox width-100" type="text" id="title" placeholder="Title">
+                            <input class="inputBox width-100" type="text" id="title">
                         </div>
                         <div class="field width-100">
                             <label for="author">Author</label>
-                            <input class="inputBox width-100" type="text" id="author" placeholder="Author">
+                            <input class="inputBox width-100" type="text" id="author">
                         </div>
                         <div class="together">
                             <div class="field width-40">
                                 <label for="pages">Pages</label>
-                                <input class="inputBox width-100" type="text" id="pages" placeholder="40">
+                                <input class="inputBox width-100" type="text" id="pages">
                             </div>
-                            <div class="field width-40">
+                            <div class="field">
                                 <div class="toggle">
                                     <label class="switch">
-                                        <input type="checkbox" id="rainbow-mode" name="rainbow-mode">
+                                        <input type="checkbox" id="isRead">
                                         <span class="slider round"></span>
                                     </label>
                                     <p>Read</p>

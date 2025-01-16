@@ -34,6 +34,12 @@ h1 {
     background-color: #e4e4e4;
     /* filter: drop-shadow(1px 1px 4px #999999); */
 }
+.check {
+    cursor: pointer;
+}
+.check:hover {
+    animation: scale-sm 0.2s ease-out forwards;
+}
 .button-sm {
     display: flex;
     justify-content: center;
@@ -41,6 +47,7 @@ h1 {
     height: 2rem;
     width: 2rem;
     border-radius: 50%;
+    cursor: pointer;
 }
 .button-sm:hover{
     -webkit-box-shadow:rgba(0,0,0,0.4) 1px 0px 8px;
@@ -139,28 +146,38 @@ h1 {
     padding: 0;
     width: 50%;
 }
-.upper-icons > * {
+.hidden {
     visibility:hidden;
 }
+/* .upper-icons > * {
+    visibility:hidden;
+} */
 .shadow:hover {
-
     .cover {
         /* background-color: #fff; */
         filter: drop-shadow(1px 1px 4px #999999);    
     }
-    .upper-icons > * {
+    .hidden,
+    .hidden > * {
         visibility: visible;
     }
 }
-
-.black {
+dialog {
+    border: none;
     margin: 0;
     position: fixed;
-    top: 0;
-    z-index: 10;
+    top: 0px;
+    right: 0;
     width: 100vw;
     height: 100vh;
+    max-height: 100vh;
+    max-width: 100vw;
     background-color: #0000009a;
+    z-index: 10;
+}
+.black {
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -168,7 +185,7 @@ h1 {
 .inputPage {
     background-color: #f4f4f4;
     border-radius: 0.5rem;
-    aspect-ratio: 0.6;
+    aspect-ratio: 0.55;
     /* width: 50%; */
     height: 70%;
     position:relative;
@@ -206,18 +223,12 @@ h1 {
     font-weight: 800;
     padding-left: 1rem;
 }
-.inputBox::placeholder{
-    font-weight: 400;
-    color: #e0e0e0;
-}
+
 .inputBox:focus {
     font-weight: 400;
     border: 1px solid black;
     /* outline: none; */
 }
-.inputBox:focus::placeholder {
-    color: transparent;
-  }
 
 .inputBox-short {
     width: 40%;
@@ -257,13 +268,15 @@ label {
     /* height: 2.5rem; */
 }
 #save{
-    margin-left: 12.5%;
-    margin-right: 12.5%;
+    margin-left: 20%;
+    margin-right: 20%;
     /* border: 2px solid orange; */
-    width: 75%;
-    height: 2rem;
+    width: 60%;
+    height: 2.5rem;
     border: none;
     background-color: #000;
+    font-size: 1.1rem;
+    font-weight: 500;
     color: #f4f4f4;
     cursor: pointer;
     /* width: 100%; */
@@ -347,4 +360,13 @@ label {
   .slider.round:before {
     border-radius: 50%;
   }
-  
+
+
+@keyframes scale-sm {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+  }
