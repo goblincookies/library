@@ -1,7 +1,7 @@
 // const addBook = document.querySelector('#addBook');
 // const dialogClose = document.querySelector('#close');
 // const dialogSave = document.querySelector('#save');
-let colorsAll = [ "#000000","#7c7c7c","#bcbcbc","#f8f8f8","#0000fc","#0078f8",
+let colorsAll = [ "#000000","#7c7c7c","#bcbcbc","#0000fc","#0078f8",
     "#3cbcfc","#a4e4fc","#0000bc","#0058f8","#6888fc","#b8b8f8","#4428bc",
     "#6844fc","#9878f8","#d8b8f8","#940084","#d800cc","#f878f8","#f8b8f8",
     "#a80020","#e40058","#f85898","#f8a4c0","#a81000","#f83800","#f87858",
@@ -32,8 +32,9 @@ function book(id, title, author, pages, isRead, style) {
     this.style = style;
 };
 
-let bookCount = 0;
-let readCount = 0;
+let serialID = 0;
+// let bookCount = 0;
+// let readCount = 0;
 let isEditingEntry = false;
 let editingEntryNum = "0";
 let libraryDB = {}; // [id]:b1 };
@@ -44,10 +45,15 @@ setup();
 
 function setup() {
     // console.log("is editing entry:", isEditingEntry);
-    let id = bookCount.toString();
-    let b1 = new book(id, "The Book of Three", "Lloyd Alexander", "514", false );
-    libraryDB[id] = b1;
-    bookCount+=1;
+
+    // let id = bookCount.toString();
+    // let b1 = new book(id, "The Book of Three", "Lloyd Alexander", "514", false );
+    // libraryDB[id] = b1;
+
+    let useDialog = false;
+    editingEntryNum = addLibraryEntry(useDialog);
+    addBookToPage(editingEntryNum);
+
 
     updateTinyButtonListeners();
     document.querySelector('#addBook').addEventListener("click", openDialog );
@@ -55,7 +61,34 @@ function setup() {
     document.querySelector('#close').addEventListener("click", dialogCloseClick );
     document.querySelector('#isRead').addEventListener("click", dialogIsReadClick);
     document.querySelector('#gen-new-cover').addEventListener("click", dialogGenerateNewCover);
+    increaseBooks();
 
+}
+
+function increaseBooks(){
+    // bookCount+=1;
+    totalBooks.textContent = Object.keys(libraryDB).length;
+    // console.log(bookCount, Object.keys(libraryDB).length);
+    calcReadPercent();
+
+};
+function decreaseBooks(){
+    totalBooks.textContent = Object.keys(libraryDB).length;
+    // bookCount-= 1;
+    // if(bookCount<0) {
+    //     bookCount=0;
+    // };
+    calcReadPercent();
+    // console.log(bookCount, Object.keys(libraryDB).length);
+    
+}
+function calcReadPercent() {
+    let readCount = 0;
+
+    for (const [key, value] of Object.entries(libraryDB)) {
+        console.log(key, value);
+
+    }
 }
 
 function dialogGenerateNewCover( e ) {
@@ -101,7 +134,7 @@ function openDialog( target ) {
         dialogCover.style.cssText = bookDB.style;
 
     } else {
-        dialogGenerateNewCover();
+        dialogCover.style.cssText = generateNewGradient();
         dialogTitle.value = "";
         dialogAuthor.value = "";
         dialogPages.value = "";
@@ -123,30 +156,35 @@ function dialogSaveClick() {
         editingEntryNum = addLibraryEntry(useDialog);
         // write new HTML
         addBookToPage(editingEntryNum);
+        // increaseBooks();
     }
 
     console.log("saving the book")
     dialogCloseClick();
 }
-function dialogIsReadClick() {
-    
+
+function dialogIsReadClick() {    
     console.log("toggled Read Checkbox", dialogIsRead.checked);
 }
 
 function addLibraryEntry(useDialog) {
-    let id = bookCount.toString();
+    serialID+=1;
+    let id = serialID.toString();
     let b = new book;
     // libraryDB = { [id]:b };
     libraryDB[id] = b;
-    bookCount+=1;
-    
+    // bookCount+=1;
+    increaseBooks();
+
     if (useDialog){
         updateLibraryEntryFromDialog(id)
     } else {
+        b.id = id;
         b.title = "The Book of Three";
         b.author = "Lloyd Alexander";
         b.pages = "514";
         b.isRead = false;
+        b.style = generateNewGradient();
     }
     return id;
 }
@@ -168,7 +206,9 @@ function updateHTML(id) {
 
     bookHTML.querySelector(".title").textContent = bookDB.title;
     bookHTML.querySelector(".author").textContent = bookDB.author;
-    bookHTML.querySelector(".pages").textContent = bookDB.pages;
+    bookHTML.querySelector(".pages").textContent = bookDB.pages + " pages";
+    let divCover = bookHTML.querySelector(".cover")
+    divCover.style.cssText = bookDB.style;
 
     let cImg = checkImgFile[1];
     if (bookDB.isRead){
@@ -200,6 +240,7 @@ function checkToggle(e) {
     let id = target.id.slice(2);
     
     console.log(libraryDB[id].isRead);
+
     if (libraryDB[id].isRead) {
         libraryDB[id].isRead = false;
         e.target.src = checkImgFile[1];
@@ -222,6 +263,7 @@ function bttnClick(e) {
         // console.log(target);
         delete libraryDB[target.id.slice(2)]
         target.remove();
+        decreaseBooks();
     } else {
         isEditingEntry = true;
         openDialog( target );
