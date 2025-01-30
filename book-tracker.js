@@ -19,6 +19,8 @@ const dialogTitle = document.querySelector('#title');
 const dialogAuthor = document.querySelector('#author');
 const dialogPages = document.querySelector('#pages');
 const dialogIsRead = document.querySelector('#isRead');
+const dialogIsReadCheck = document.querySelector('#isReadCheck');
+
 const dialogCover = document.querySelector('#dialog-cover');
 const checkImgFile = [ "images/checkFill.svg", "images/checkOutline.svg"];
 
@@ -33,8 +35,7 @@ function book(id, title, author, pages, isRead, style) {
 };
 
 let serialID = 0;
-// let bookCount = 0;
-// let readCount = 0;
+let undoID = 0;
 let isEditingEntry = false;
 let editingEntryNum = "0";
 let libraryDB = {}; // [id]:b1 };
@@ -60,9 +61,11 @@ function setup() {
     document.querySelector('#save').addEventListener("click", dialogSaveClick );
     document.querySelector('#close').addEventListener("click", dialogCloseClick );
     document.querySelector('#isRead').addEventListener("click", dialogIsReadClick);
+    document.querySelector('#isReadCheck').addEventListener("click", dialogIsReadClick);
+
     document.querySelector('#gen-new-cover').addEventListener("click", dialogGenerateNewCover);
     increaseBooks();
-
+    calcReadPercent();
 }
 
 function increaseBooks(){
@@ -87,8 +90,12 @@ function calcReadPercent() {
 
     for (const [key, value] of Object.entries(libraryDB)) {
         console.log(key, value);
-
+        if (libraryDB[key].isRead) {
+            readCount += 1;
+        }
     }
+
+    percentRead.textContent = Math.floor((readCount/Object.keys(libraryDB).length)*100) + "%";
 }
 
 function dialogGenerateNewCover( e ) {
@@ -100,10 +107,13 @@ function dialogGenerateNewCover( e ) {
 
 function generateNewGradient() {
     let newColors = [];
-    let gradDeg = Math.floor(Math.random()*360);
+    // let gradDeg = Math.floor(Math.random()*360);
+    let gradDeg = 45;
+    // newColors.push("#000");
     for (let i = 0; i < 2; i++) {
         newColors.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);        
     }
+
     // let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 45%, ${newColors[2]} 100%);`;
     let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
 
@@ -161,10 +171,13 @@ function dialogSaveClick() {
 
     console.log("saving the book")
     dialogCloseClick();
+    calcReadPercent();
 }
 
-function dialogIsReadClick() {    
+function dialogIsReadClick( e ) {    
     console.log("toggled Read Checkbox", dialogIsRead.checked);
+    console.log(e.target);
+
 }
 
 function addLibraryEntry(useDialog) {
@@ -249,8 +262,8 @@ function checkToggle(e) {
         libraryDB[id].isRead = true;
         e.target.src = checkImgFile[0];
         e.target.classList.remove("hidden");
-
     }
+    calcReadPercent();
 };
 function bttnClick(e) {
     console.log(e);
@@ -261,14 +274,76 @@ function bttnClick(e) {
 
     if(e.target.parentNode.classList.contains("delete")) {
         // console.log(target);
-        delete libraryDB[target.id.slice(2)]
-        target.remove();
+        // delete libraryDB[target.id.slice(2)];
         decreaseBooks();
+
+        transformBookToUndo( target );
+
+        // target.remove();
+
+        // ADD UNDO ELEMENT
+
     } else {
         isEditingEntry = true;
         openDialog( target );
     }
     
+}
+function transformBookToUndo(target){
+    target.classList.remove("shadow");
+    let cover = target.querySelector(".cover");
+    cover.textContent = '';
+    cover.classList.remove("filled","outline-w");
+    cover.classList.add("blank");
+    cover.style.cssText="";
+    target.querySelector(".title").remove();
+    target.querySelector(".author").remove();
+    target.querySelector(".pages").remove();
+
+    const divUndoWrapper = document.createElement("div");
+    const btnUndo = document.createElement("button");
+    const pUndo = document.createElement("p");
+    const imgUndo = document.createElement("img");
+
+    divUndoWrapper.classList.add("undo-wrapper");
+    btnUndo.classList.add("undo");
+    imgUndo.src = "images/undo.svg";
+    pUndo.textContent="undo";
+    btnUndo.appendChild(pUndo);
+    btnUndo.appendChild(imgUndo);
+    divUndoWrapper.appendChild(btnUndo);
+    cover.appendChild(divUndoWrapper);
+
+    undoID = target.id.slice(2);
+    btnUndo.addEventListener("click", undoDelete);
+    cover.addEventListener("mouseleave", confirmDelete);
+    // 
+    // 
+    // 
+}
+function confirmDelete( e ) {
+    console.log("delete it all!");
+    let target = e.target.parentNode;
+    delete libraryDB[target.id.slice(2)];
+    target.remove();
+    decreaseBooks();
+}
+
+function undoDelete() {
+
+    // console.log(target);
+    console.log("whoops, undo that");
+    console.log(`let's bring back ${undoID} to the page!`);
+    // console.log(target.id.slice(2));
+    
+
+    let newHTML = createHtmlBook( libraryDB[undoID] );
+    let target = document.querySelector("#id"+undoID);
+    target.querySelector(".cover").remove();
+
+    updateTinyButtonListeners();
+    increaseBooks();
+
 }
 
 function createHtmlSmallButton( file ) {
@@ -315,9 +390,21 @@ function createHtmlBook( bookDB ){
     //     <div class="text-sm text-sub pages">514 pages</div>
     // </div>
 
+    
+    let searchID = "#id" + bookDB.id;
+    let book = document.querySelector(searchID);
+    console.log( `searching for ${searchID}`);
+
+    if(book) {
+        console.log("already exists!");
+        book
+    } else {
+        console.log("create from scratch please");
+        book = document.createElement("div");
+    }
 
 
-    const book = document.createElement("div");
+
     book.classList.add("book", "shadow");
     book.id = "id" + bookDB.id;
     const cover = document.createElement("div");
@@ -325,7 +412,7 @@ function createHtmlBook( bookDB ){
     
 
     const upperIcons = document.createElement("div");
-    upperIcons.classList.add("upper-icons");
+    upperIcons.classList.add("hidden");
 
     const iconDelete = createHtmlSmallButton("delete"); //, "button-sm", "button-action");
     const iconEdit = createHtmlSmallButton("edit", "button-sm", "button-action");
@@ -341,6 +428,7 @@ function createHtmlBook( bookDB ){
     // console.log(b)
     if (bookDB.isRead) {
         cImg = checkImgFile[0];
+        imgCheck.classList.remove("hidden");
     }    
     imgCheck.src = cImg;
     
