@@ -209,7 +209,7 @@ dialog {
     height: 100vh;
     max-height: 100vh;
     max-width: 100vw;
-    background-color: #0000009a;
+    background-color: #00000080;
     z-index: 10;
 }
 .black {

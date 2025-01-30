@@ -9,6 +9,12 @@ let colorsAll = [ "#000000","#7c7c7c","#bcbcbc","#0000fc","#0078f8",
     "#f8b800","#f8d878","#007800","#00b800","#b8f818","#d8f878","#006800",
     "#00a800","#58d854","#b8f8b8","#005800","#00a844","#58f898","#b8f8d8",
     "#004058","#008888","#00e8d8","#00fcfc","#f8d8f8","#787878"];
+
+let darkColors = [ "#f94144","#f3722c","#f8961e","#f9844a","#90be6d","#43aa8b",
+    "#4d908e","#577590","#277da1","#471ca8","#884ab2","#ff930a","#f24b04","#d1105a"];
+let lightColors = ["#fbf8cc","#fde4cf","#ffcfd2","#f1c0e8","#cfbaf0","#a3c4f3",
+    "#90dbf4","#8eecf5","#98f5e1","#b9fbc0"];
+
 const content = document.querySelector('#content');
 const dialog = document.querySelector("#dialog");
 
@@ -109,19 +115,27 @@ function dialogGenerateNewCover( e ) {
 }
 
 function generateNewGradient() {
+    let twoSystem = [];
+
     let newColors = [];
     // let gradDeg = Math.floor(Math.random()*360);
     let gradDeg = 45;
     // newColors.push("#000");
+    twoSystem.push(lightColors[ Math.floor(Math.random()*lightColors.length)]);
+    twoSystem.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);
+
+    // twoSystem.push(darkColors[ Math.floor(Math.random()*darkColors.length)]);
+
     for (let i = 0; i < 2; i++) {
-        newColors.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);        
+        newColors.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);
     }
 
-    // let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 45%, ${newColors[2]} 100%);`;
     let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
+    let linearGradTwo = `background:linear-gradient( ${gradDeg}deg, ${twoSystem[0]} 0%, ${twoSystem[1]} 100%);`;
 
-    console.log(linearGrad);
-    return linearGrad.toString();
+    console.log(linearGradTwo);
+    // return linearGrad.toString();
+    return linearGradTwo.toString();
 }
 
 function dialogCloseClick() {
