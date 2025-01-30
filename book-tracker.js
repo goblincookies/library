@@ -232,7 +232,14 @@ function updateHTML(id) {
 
     bookHTML.querySelector(".title").textContent = bookDB.title;
     bookHTML.querySelector(".author").textContent = bookDB.author;
-    bookHTML.querySelector(".pages").textContent = bookDB.pages + " pages";
+    console.log("book length! " + bookDB.pages.length);
+
+    if (parseInt(bookDB.pages).toString() == bookDB.pages ) {
+        bookHTML.querySelector(".pages").textContent = bookDB.pages + " pages";
+    } else {
+        bookHTML.querySelector(".pages").textContent = "";
+    }
+
     let divCover = bookHTML.querySelector(".cover")
     divCover.style.cssText = bookDB.style;
 
@@ -465,7 +472,13 @@ function createHtmlBook( bookDB ){
     const textTitle = getTextHTML(bookDB.title, ["text-md", "title"] );
     const textAuthor = getTextHTML(bookDB.author, ["text-sm", "author"] );
     const textPage = getTextHTML(bookDB.pages, ["text-sm", "text-sub", "pages"] );
-    textPage.textContent = textPage.textContent + " pages";
+    
+    if ( parseInt(bookDB.pages).toString() == bookDB.pages ) {
+        textPage.textContent = bookDB.pages + " pages";
+    } else {
+        textPage.textContent = "";
+    }
+    // textPage.textContent = textPage.textContent + " pages";
     
     cover.style.cssText = bookDB.style;
     cover.appendChild(checkIcon);
