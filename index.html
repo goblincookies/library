@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <dialog open id="dialog">
+    <dialog id="dialog">
         <div class="black">
             <div class="inputPage">
                 <div class="button-sm close" id="close"><img src="images/close.svg" alt=""></div>
@@ -42,17 +42,17 @@
                     </div>
                     <div class="inputDetails">
                         <div class="field width-100">
-                            <label for="title">Title</label>
+                            <label for="title" id="titleLabel">Title</label>
                             <input class="inputBox width-100" type="text" id="title">
                         </div>
                         <div class="field width-100">
-                            <label for="author">Author</label>
+                            <label for="author" id="authorLabel">Author</label>
                             <input class="inputBox width-100" type="text" id="author">
                         </div>
                         <div class="together">
                             <div class="field width-40">
-                                <label for="pages">Pages <span class="required">*number*</span> </label>
-                                <input class="inputBox width-100 error" type="text" id="pages">
+                                <label for="pages" id="pageLabel">Pages</label>
+                                <input class="inputBox width-100" type="text" id="pages">
                             </div>
                             <div class="field">
                                 <div class="toggle">

@@ -155,26 +155,82 @@ function openDialog( target ) {
     }
     dialog.showModal();
 }
+function dialogValidityCheck() {
 
-function dialogSaveClick() {
+    // check if page is number
+    let isValidTitle = false;
+    let isValidAuthor = false;
+    let isValidPages = false;
 
-    if(isEditingEntry) {
-        // update entry
-        updateLibraryEntryFromDialog(editingEntryNum);
-        // update HTML
-        updateHTML(editingEntryNum );
+    if (dialogTitle.value.replace(/\s/g, '').length > 0 ) {isValidTitle = true;}
+    if (dialogAuthor.value.replace(/\s/g, '').length > 0 ) {isValidAuthor = true;}
+    if (parseInt(dialogPages.value).toString() == dialogPages.value) {isValidPages = true; };
+
+    if(isValidTitle) {
+        document.querySelector("#titleLabel").textContent = "Title";
+        dialogTitle.classList.remove("error");
     } else {
-        // add entry
-        let useDialog = true;
-        editingEntryNum = addLibraryEntry(useDialog);
-        // write new HTML
-        addBookToPage(editingEntryNum);
-        // increaseBooks();
+        // TITLE DATA NOT VALID
+        let spanTitleError = document.createElement("span");
+        let labelTitle= document.querySelector("#titleLabel")
+        spanTitleError.classList.add("required");
+        spanTitleError.textContent = "*required*";
+        labelTitle.textContent = "Title";
+        labelTitle.appendChild(spanTitleError);
+        dialogTitle.classList.add("error");
     }
 
-    console.log("saving the book")
-    dialogCloseClick();
-    calcReadPercent();
+    if(isValidAuthor) {
+        document.querySelector("#authorLabel").textContent = "Author";
+        dialogAuthor.classList.remove("error");
+    } else {
+        // PAGE DATA NOT VALID
+        let spanAuthorError = document.createElement("span");
+        let labelAuthor= document.querySelector("#authorLabel")
+        spanAuthorError.classList.add("required");
+        spanAuthorError.textContent = "*required*";
+        labelAuthor.textContent = "Author";
+        labelAuthor.appendChild(spanAuthorError);
+        dialogAuthor.classList.add("error");
+    }
+
+    if(isValidPages){
+        document.querySelector("#pageLabel").textContent = "Pages";
+        dialogPages.classList.remove("error");
+    } else {
+        // PAGE DATA NOT VALID
+        let spanPageError = document.createElement("span");
+        let labelPage= document.querySelector("#pageLabel")
+        spanPageError.classList.add("required");
+        spanPageError.textContent = "*number*";
+        labelPage.textContent = "Pages";
+        labelPage.appendChild(spanPageError);
+        dialogPages.classList.add("error");
+    }
+
+    return (isValidTitle && isValidAuthor && isValidPages);
+}
+function dialogSaveClick() {
+
+    if( dialogValidityCheck() ) {
+        if(isEditingEntry) {
+            // update entry
+            updateLibraryEntryFromDialog(editingEntryNum);
+            // update HTML
+            updateHTML(editingEntryNum );
+        } else {
+            // add entry
+            let useDialog = true;
+            editingEntryNum = addLibraryEntry(useDialog);
+            // write new HTML
+            addBookToPage(editingEntryNum);
+            // increaseBooks();
+        }
+    
+        console.log("saving the book")
+        dialogCloseClick();
+        calcReadPercent();
+    }    
 }
 function dialogImgCheckClick() {
     dialogIsRead.checked = ! dialogIsRead.checked;
@@ -252,15 +308,6 @@ function updateHTML(id) {
         imgCheck.src = checkImgFile[1];
         imgCheck.classList.add("hidden");
     }
-
-    // let cImg = checkImgFile[1];
-
-
-    // bookHTML.querySelector(".check").src = cImg;
-
-    // bookHTML.querySelector(".check").src = bookDB.isRead ? cImg = checkImgFile[0] : cImg = checkImgFile[1];
-
-
 }
 
 function addBookToPage ( id ) {
