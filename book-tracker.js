@@ -61,7 +61,7 @@ function setup() {
     document.querySelector('#save').addEventListener("click", dialogSaveClick );
     document.querySelector('#close').addEventListener("click", dialogCloseClick );
     document.querySelector('#isRead').addEventListener("click", dialogIsReadClick);
-    document.querySelector('#isReadCheck').addEventListener("click", dialogIsReadClick);
+    document.querySelector('#isReadCheck').addEventListener("click", dialogImgCheckClick);
 
     document.querySelector('#gen-new-cover').addEventListener("click", dialogGenerateNewCover);
     increaseBooks();
@@ -94,8 +94,11 @@ function calcReadPercent() {
             readCount += 1;
         }
     }
-
-    percentRead.textContent = Math.floor((readCount/Object.keys(libraryDB).length)*100) + "%";
+    if (readCount > 0 ) {
+        percentRead.textContent = Math.floor((readCount/Object.keys(libraryDB).length)*100) + "%";
+    } else {
+        percentRead.textContent = "0%";
+    }
 }
 
 function dialogGenerateNewCover( e ) {
@@ -173,10 +176,20 @@ function dialogSaveClick() {
     dialogCloseClick();
     calcReadPercent();
 }
+function dialogImgCheckClick() {
+    dialogIsRead.checked = ! dialogIsRead.checked;
+    dialogIsReadClick();
+}
 
-function dialogIsReadClick( e ) {    
+function dialogIsReadClick() {
+    
+    // if its the img, manually toggle things
+
     console.log("toggled Read Checkbox", dialogIsRead.checked);
-    console.log(e.target);
+    let divCheck = document.querySelector("#isReadCheck");
+    let imgCheck = divCheck.querySelector("img");
+    
+    imgCheck.src = dialogIsRead.checked ? checkImgFile[0] : checkImgFile[1];
 
 }
 
@@ -223,12 +236,23 @@ function updateHTML(id) {
     let divCover = bookHTML.querySelector(".cover")
     divCover.style.cssText = bookDB.style;
 
-    let cImg = checkImgFile[1];
-    if (bookDB.isRead){
-        cImg = checkImgFile[0];
-    };
 
-    bookHTML.querySelector(".check").src = cImg;
+    let imgCheck = bookHTML.querySelector(".check");
+    if (bookDB.isRead){
+        imgCheck.src = checkImgFile[0];
+        imgCheck.classList.remove("hidden");
+    } else {
+        imgCheck.src = checkImgFile[1];
+        imgCheck.classList.add("hidden");
+    }
+
+    // let cImg = checkImgFile[1];
+
+
+    // bookHTML.querySelector(".check").src = cImg;
+
+    // bookHTML.querySelector(".check").src = bookDB.isRead ? cImg = checkImgFile[0] : cImg = checkImgFile[1];
+
 
 }
 

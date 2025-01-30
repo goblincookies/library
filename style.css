@@ -7,7 +7,7 @@
     font-style: italic;
 }
 body {
-    background-color: #f4f4f4;
+    background-color: #e1e1e1;  
     width: max(50%, min(100%, 70rem ));
     margin-left: auto;
     margin-right: auto;
@@ -15,13 +15,14 @@ body {
 h1 {
     font-weight: 800;
     font-size: 6rem;
-    color: #e4e4e4;
+    /* color: #ffffff; */
 }
 #sidebar {
     grid-row-start: 1;
     grid-row-end: 100;
 }
 #addBook{
+    background-color: #e1e1e1;
     aspect-ratio: 0.75;
     width: 80%;
     border: 2px solid #000;
@@ -33,12 +34,15 @@ h1 {
     align-items: center;
 }
 #addBook:hover{
-    background-color: #e4e4e4;
+    background-color: #ffffff;
     /* filter: drop-shadow(1px 1px 4px #999999); */
 }
+
+#isReadCheck,
 .check {
     cursor: pointer;
 }
+#isReadCheck,
 .check:hover {
     animation: scale-sm 0.2s ease-out forwards;
 }
@@ -79,11 +83,11 @@ h1 {
     font-size: 2.5rem;
 }
 .text-md{
-    font-weight: 800;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.2rem;
 }
 .text-sm {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 .text-sub {
     font-weight: 600;
@@ -92,29 +96,21 @@ h1 {
     font-size: 1.1rem;
     vertical-align: 0.8rem;
 }
-.outline {
-    fill: none;
-    stroke: #646464;
-    stroke-width: 1px;
-    stroke-dasharray: 2,2;
-    stroke-linejoin: round;
-}
+
 #content {
-    /* display: inline-block; */
-    /* border: 2px solid green; */
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: repeat(6, 1fr);
     grid-auto-rows:auto;
-    /* gap: 0.4rem; */
-    /* grid-template-rows: repeat(2,1fr); */
     width: 100%;
 }
 .book {
-    /* border: 2px solid lightskyblue; */
     padding-right: 0.4rem;
     margin-bottom: 1rem;
-    /* margin-bottom: 0.4rem; */
+    /* outline: 2px solid red; */
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 .cover {
     aspect-ratio: 0.75;
@@ -131,10 +127,10 @@ h1 {
     background-color: lightcoral;
 }
 .outline-w{
-    border: 2px solid #fff;
+    border: 4px solid #fff;
 }
 .blank {
-    background-color: #e0e0e0;
+    background-color: #c2c2c2;
     border: 2px solid #dfdfdf;
 }
 .undo-wrapper {
@@ -226,7 +222,7 @@ dialog {
 .inputPage {
     background-color: #f4f4f4;
     border-radius: 0.5rem;
-    aspect-ratio: 0.55;
+    aspect-ratio: 0.6;
     /* width: 50%; */
     height: 70%;
     position:relative;
@@ -240,15 +236,14 @@ dialog {
     align-items: center;
     gap: 1rem;
     height: 100%;
-    /* outline: 1px solid red; */
 }
-
 .inputCover{
     width: 70%;
 }
 .inputDetails{
     height: 100%;
     width: 100%;
+    /* border: 1px solid green; */
     /* outline: 2px solid black; */
     display: flex;
     flex-direction: column;
@@ -258,19 +253,20 @@ dialog {
 .inputBox {
     border: none;
     /* width: 100%; */
-    height: 2.0rem;
-    font-size: 1rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
     font-style: normal;
-    font-weight: 800;
+    font-weight: 700;
     padding-left: 1rem;
 }
-
+.error {
+    outline: 2px solid #bb1010;
+}
 .inputBox:focus {
     font-weight: 400;
     border: 1px solid black;
     /* outline: none; */
 }
-
 .inputBox-short {
     width: 40%;
     /* height: 2.5rem; */
@@ -294,7 +290,7 @@ dialog {
     /* align-items: center; */
 }
 label {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin-left: 0rem;
     /* margin-bottom: 2rem; */
     /* outline: 1px solid red; */
@@ -309,11 +305,11 @@ label {
     /* height: 2.5rem; */
 }
 #save{
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 25%;
+    margin-right: 25%;
     /* border: 2px solid orange; */
-    width: 60%;
-    height: 2.5rem;
+    width: 50%;
+    height: 3.5rem;
     border: none;
     background-color: #000;
     font-size: 1.1rem;
@@ -334,18 +330,25 @@ label {
     right: 0.2rem;
     position:absolute;
 }
+.required {
+    color: #bb1010;
+}
 .toggle {
-    height: 2rem;
-    border: 1px solid greenyellow;
+    height: 2.5rem;
+    /* border: 1px solid greenyellow; */
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.6rem;
+}
+.toggle > p {
+    font-size: 1.2rem;
 }
 .switch {
     position: relative;
     display: inline-block;
-    width: 38px;
-    height: 20px;
+    width: 3rem;
+    height: 2rem;
   }
   /* Hide default HTML checkbox */
   .switch input {
@@ -370,8 +373,8 @@ label {
   .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 1.7rem;
+    width: 1.7rem;
     left: 0px;
     bottom: 0px;
     background-color: white;
@@ -388,9 +391,9 @@ label {
   }
   
   input:checked + .slider:before {
-    -webkit-transform: translateX(18px);
-    -ms-transform: translateX(18px);
-    transform: translateX(18px);
+    -webkit-transform: translateX(1.1rem);
+    -ms-transform: translateX(1.1rem);
+    transform: translateX(1.1rem);
   }
   
   /* Rounded sliders */

@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <dialog id="dialog">
+    <dialog open id="dialog">
         <div class="black">
             <div class="inputPage">
                 <div class="button-sm close" id="close"><img src="images/close.svg" alt=""></div>
@@ -51,8 +51,8 @@
                         </div>
                         <div class="together">
                             <div class="field width-40">
-                                <label for="pages">Pages</label>
-                                <input class="inputBox width-100" type="text" id="pages">
+                                <label for="pages">Pages <span class="required">*number*</span> </label>
+                                <input class="inputBox width-100 error" type="text" id="pages">
                             </div>
                             <div class="field">
                                 <div class="toggle">
