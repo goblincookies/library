@@ -115,27 +115,18 @@ function dialogGenerateNewCover( e ) {
 }
 
 function generateNewGradient() {
-    let twoSystem = [];
-
     let newColors = [];
-    // let gradDeg = Math.floor(Math.random()*360);
     let gradDeg = 45;
-    // newColors.push("#000");
-    twoSystem.push(lightColors[ Math.floor(Math.random()*lightColors.length)]);
-    twoSystem.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);
 
-    // twoSystem.push(darkColors[ Math.floor(Math.random()*darkColors.length)]);
+    newColors.push(lightColors[ Math.floor(Math.random()*lightColors.length)]);
+    newColors.push(darkColors[ Math.floor(Math.random()*darkColors.length)]);
 
-    for (let i = 0; i < 2; i++) {
-        newColors.push(colorsAll[ Math.floor(Math.random()*colorsAll.length)]);
-    }
-
+    // let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
     let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
-    let linearGradTwo = `background:linear-gradient( ${gradDeg}deg, ${twoSystem[0]} 0%, ${twoSystem[1]} 100%);`;
 
-    console.log(linearGradTwo);
+    console.log(linearGrad);
     // return linearGrad.toString();
-    return linearGradTwo.toString();
+    return linearGrad.toString();
 }
 
 function dialogCloseClick() {
@@ -339,6 +330,7 @@ function updateTinyButtonListeners() {
 }
 function checkToggle(e) {
     let target = e.target;
+    
     for (let i = 0; i < 3; i++) {
         target = target.parentNode;
     }
@@ -358,11 +350,17 @@ function checkToggle(e) {
     calcReadPercent();
 };
 function bttnClick(e) {
-    console.log(e);
+    // console.log(e.target);
     let target = e.target;
-    for (let i = 0; i < 4; i++) {
+
+    while(target.id == '') {
         target = target.parentNode;
+        // console.log(target);
     }
+    
+    // for (let i = 0; i < 4; i++) {
+    //     target = target.parentNode;
+    // }
 
     if(e.target.parentNode.classList.contains("delete")) {
         // console.log(target);
