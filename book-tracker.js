@@ -148,7 +148,12 @@ function openDialog( target ) {
         dialogTitle.value = bookDB.title;
         dialogAuthor.value = bookDB.author;
         dialogPages.value = bookDB.pages;
-        dialogIsRead.value = bookDB.isRead;
+        dialogIsRead.checked = bookDB.isRead;
+
+        let divCheck = document.querySelector("#isReadCheck");
+        let imgCheck = divCheck.querySelector("img");
+        imgCheck.src = bookDB.isRead ? checkImgFile[0] : checkImgFile[1];
+
         dialogCover.style.cssText = bookDB.style;
 
     } else {
@@ -330,23 +335,23 @@ function updateTinyButtonListeners() {
 }
 function checkToggle(e) {
     let target = e.target;
-    
-    for (let i = 0; i < 3; i++) {
+    console.log("clicked on: ", target);
+
+    while(target.id == '') {
         target = target.parentNode;
     }
+
     let id = target.id.slice(2);
-    
-    console.log(libraryDB[id].isRead);
+    libraryDB[id].isRead = !libraryDB[id].isRead;
 
     if (libraryDB[id].isRead) {
-        libraryDB[id].isRead = false;
-        e.target.src = checkImgFile[1];
-        e.target.classList.add("hidden");
-    }else {
-        libraryDB[id].isRead = true;
-        e.target.src = checkImgFile[0];
         e.target.classList.remove("hidden");
+        e.target.src = checkImgFile[0];
+    }else {
+        e.target.classList.add("hidden");
+        e.target.src = checkImgFile[1];
     }
+
     calcReadPercent();
 };
 function bttnClick(e) {
