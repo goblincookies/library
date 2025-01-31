@@ -42,7 +42,7 @@ h1 {
 .check {
     cursor: pointer;
 }
-#isReadCheck,
+#isReadCheck:hover,
 .check:hover {
     animation: scale-sm 0.2s ease-out forwards;
 }

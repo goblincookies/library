@@ -1,36 +1,20 @@
-// const addBook = document.querySelector('#addBook');
-// const dialogClose = document.querySelector('#close');
-// const dialogSave = document.querySelector('#save');
-let colorsAll = [ "#000000","#7c7c7c","#bcbcbc","#0000fc","#0078f8",
-    "#3cbcfc","#a4e4fc","#0000bc","#0058f8","#6888fc","#b8b8f8","#4428bc",
-    "#6844fc","#9878f8","#d8b8f8","#940084","#d800cc","#f878f8","#f8b8f8",
-    "#a80020","#e40058","#f85898","#f8a4c0","#a81000","#f83800","#f87858",
-    "#f0d0b0","#881400","#e45c10","#fca044","#fce0a8","#503000","#ac7c00",
-    "#f8b800","#f8d878","#007800","#00b800","#b8f818","#d8f878","#006800",
-    "#00a800","#58d854","#b8f8b8","#005800","#00a844","#58f898","#b8f8d8",
-    "#004058","#008888","#00e8d8","#00fcfc","#f8d8f8","#787878"];
 
-let darkColors = [ "#f94144","#f3722c","#f8961e","#f9844a","#90be6d","#43aa8b",
-    "#4d908e","#577590","#277da1","#471ca8","#884ab2","#ff930a","#f24b04","#d1105a"];
-let lightColors = ["#fbf8cc","#fde4cf","#ffcfd2","#f1c0e8","#cfbaf0","#a3c4f3",
-    "#90dbf4","#8eecf5","#98f5e1","#b9fbc0"];
-
-const content = document.querySelector('#content');
 const dialog = document.querySelector("#dialog");
-
-const totalBooks = document.querySelector('#totalBooks');
-const percentRead = document.querySelector('#percentRead');
-
 const dialogTitle = document.querySelector('#title');
 const dialogAuthor = document.querySelector('#author');
 const dialogPages = document.querySelector('#pages');
 const dialogIsRead = document.querySelector('#isRead');
 const dialogIsReadCheck = document.querySelector('#isReadCheck');
-
 const dialogCover = document.querySelector('#dialog-cover');
 const checkImgFile = [ "images/checkFill.svg", "images/checkOutline.svg"];
 
+// COLORS FOR COVER GRADIENT
+let darkColors = [ "#f94144","#f3722c","#f8961e","#f9844a","#90be6d","#43aa8b",
+    "#4d908e","#577590","#277da1","#471ca8","#884ab2","#ff930a","#f24b04","#d1105a"];
+let lightColors = ["#fbf8cc","#fde4cf","#ffcfd2","#f1c0e8","#cfbaf0","#a3c4f3",
+    "#90dbf4","#8eecf5","#98f5e1","#b9fbc0"];
 
+// BOOK DATA STRUCTURE
 function book(id, title, author, pages, isRead, style) {
     this.id = id;
     this.title = title;
@@ -40,142 +24,150 @@ function book(id, title, author, pages, isRead, style) {
     this.style = style;
 };
 
+// SERIAL ID MAKES SURE EACH BOOK GETS A UNIQUE ID
+// IT'S USED AS HTML ID AND TO ACCESS THE LIBRARY DATABASE
 let serialID = 0;
+// UNDO ID MAKES IT EASIER TO RESTORE DELETED BOOKS
 let undoID = 0;
 let isEditingEntry = false;
 let editingEntryNum = "0";
-let libraryDB = {}; // [id]:b1 };
-
+// LIBRARY DATABASE
+let libraryDB = {};
 
 
 setup();
 
 function setup() {
-    // console.log("is editing entry:", isEditingEntry);
-
-    // let id = bookCount.toString();
-    // let b1 = new book(id, "The Book of Three", "Lloyd Alexander", "514", false );
-    // libraryDB[id] = b1;
-
+    // WRITE A PLACEHOLDER BOOK WHEN FIRST LOADED
     let useDialog = false;
     editingEntryNum = addLibraryEntry(useDialog);
     addBookToPage(editingEntryNum);
 
-
+    // MAKE SURE DELETE/EDIT HAVE LISTENERS
     updateTinyButtonListeners();
+
+    // SETUP EVENT LISTENERS
     document.querySelector('#addBook').addEventListener("click", openDialog );
     document.querySelector('#save').addEventListener("click", dialogSaveClick );
     document.querySelector('#close').addEventListener("click", dialogCloseClick );
     document.querySelector('#isRead').addEventListener("click", dialogIsReadClick);
     document.querySelector('#isReadCheck').addEventListener("click", dialogImgCheckClick);
-
     document.querySelector('#gen-new-cover').addEventListener("click", dialogGenerateNewCover);
-    increaseBooks();
-    calcReadPercent();
-}
-
-function increaseBooks(){
-    // bookCount+=1;
-    totalBooks.textContent = Object.keys(libraryDB).length;
-    // console.log(bookCount, Object.keys(libraryDB).length);
-    calcReadPercent();
-
-};
-function decreaseBooks(){
-    totalBooks.textContent = Object.keys(libraryDB).length;
-    // bookCount-= 1;
-    // if(bookCount<0) {
-    //     bookCount=0;
-    // };
-    calcReadPercent();
-    // console.log(bookCount, Object.keys(libraryDB).length);
     
+    // ESCAPE CAN BE USED TO CLOSE THE DIALOG WINDOW
+    // THIS TRACKS THE ACTION
+    dialog.addEventListener("keydown", (e) => { if(e.key == "Escape") { dialogEscape() } } );
+    updateSideBookInfo();
 }
-function calcReadPercent() {
+
+// VISUALLY UPDATE THE BOOK COUNT
+function updateSideBookInfo(){
+    // SET BOOK TOTAL TO THE LIBRARY DATABASE SIZE
+    let dbSize = Object.keys(libraryDB).length;
+    document.querySelector('#totalBooks').textContent = dbSize;
+
+    // RECALCULATE THE READ PERCENTAGE
     let readCount = 0;
 
     for (const [key, value] of Object.entries(libraryDB)) {
-        console.log(key, value);
         if (libraryDB[key].isRead) {
             readCount += 1;
         }
     }
-    if (readCount > 0 ) {
-        percentRead.textContent = Math.floor((readCount/Object.keys(libraryDB).length)*100) + "%";
-    } else {
-        percentRead.textContent = "0%";
-    }
-}
+    // WRITE PERCENTAGE TO SCREEN
+    const percentRead = document.querySelector('#percentRead');
+    percentRead.textContent = readCount > 0 ? Math.floor((readCount/dbSize)*100) + "%" : "0%";
+};
 
-function dialogGenerateNewCover( e ) {
-    console.log("generating a new cover");
+// GENERATE AND APPLY A NEW GRADIENT
+function dialogGenerateNewCover( ) {
     dialogCover.classList.remove("filled");
     dialogCover.style.removeProperty("background");
     dialogCover.style.cssText = generateNewGradient();
 }
 
+// CREATE THE CSS GRADIENT STYLE
 function generateNewGradient() {
     let newColors = [];
-    let gradDeg = 45;
+    let gradDeg = 45; // << COULD BE RANDOM, BUT IT LOOKS MESSY TO ME
 
     newColors.push(lightColors[ Math.floor(Math.random()*lightColors.length)]);
     newColors.push(darkColors[ Math.floor(Math.random()*darkColors.length)]);
 
-    // let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
     let linearGrad = `background:linear-gradient( ${gradDeg}deg, ${newColors[0]} 0%, ${newColors[1]} 100%);`;
 
     console.log(linearGrad);
-    // return linearGrad.toString();
     return linearGrad.toString();
 }
 
+// CLOSE THE DIALOG WINDOW
+// THIS DOES NOT SAVE ANYTHING
 function dialogCloseClick() {
+    console.log("closed")
     isEditingEntry = false;
-    console.log("closing");
     dialog.close();
 }
 
-function openDialog( target ) {
-    
-    console.log("opening dialog");
-    console.log("editing entry:",isEditingEntry);
-    console.log(target);
+// DIALOG IS CLOSED WITH ESCAPE BUTTON
+function dialogEscape() {
+    console.log("closed")
+    isEditingEntry = false;
+};
 
+// OPEN THE DIALOG WINDOW
+function openDialog( target ) {
+
+    // PREFILL INPUT
     if (isEditingEntry) {
+        // GET ID
         editingEntryNum = target.id.slice(2);
-        // populate dialog with data
+        // POPULATE INPUT WITH DATABASE DATA FOR EDITING
         let bookDB = libraryDB[editingEntryNum];
+        dialogCover.style.cssText = bookDB.style;
         dialogTitle.value = bookDB.title;
         dialogAuthor.value = bookDB.author;
         dialogPages.value = bookDB.pages;
         dialogIsRead.checked = bookDB.isRead;
 
+        // VISUALLY UPDATE THE BIG CHECKMARK
         let divCheck = document.querySelector("#isReadCheck");
         let imgCheck = divCheck.querySelector("img");
         imgCheck.src = bookDB.isRead ? checkImgFile[0] : checkImgFile[1];
 
-        dialogCover.style.cssText = bookDB.style;
-
     } else {
+        // SET INPUT TO DEFAULT
         dialogCover.style.cssText = generateNewGradient();
         dialogTitle.value = "";
         dialogAuthor.value = "";
         dialogPages.value = "";
-        dialogIsRead.value = false;
+
+        dialogIsRead.checked = false;
+        // VISUALLY UPDATE THE BIG CHECKMARK
+        let divCheck = document.querySelector("#isReadCheck");
+        let imgCheck = divCheck.querySelector("img");
+        imgCheck.src = dialogIsRead.checked ? checkImgFile[0] : checkImgFile[1];
     }
+    // ONCE DATA IS FILLED/REMOVED, SHOW DIALOG
     dialog.showModal();
 }
+
+// NAIVE FORM CHECK
+// SINCE THIS DOES NOT ACCESS A REAL DATABASE
+// WITH BOOKS TO CROSS-REFERENCE, IT ONLY CHECKS
+// THAT ALL INPUT FIELDS HAVE DATA
 function dialogValidityCheck() {
 
-    // check if page is number
     let isValidTitle = false;
     let isValidAuthor = false;
     let isValidPages = false;
-
+    
+    // REMOVES SPACES, AND THEN CHECKS THAT IT'S AT LEAST 1 DIGIT LONG
     if (dialogTitle.value.replace(/\s/g, '').length > 0 ) {isValidTitle = true;}
     if (dialogAuthor.value.replace(/\s/g, '').length > 0 ) {isValidAuthor = true;}
+    // CHECK IF PAGE IS A NUMBER
     if (parseInt(dialogPages.value).toString() == dialogPages.value) {isValidPages = true; };
 
+    // UPDATES TITLE PASS/FAIL VISUALS
     if(isValidTitle) {
         document.querySelector("#titleLabel").textContent = "Title";
         dialogTitle.classList.remove("error");
@@ -190,6 +182,7 @@ function dialogValidityCheck() {
         dialogTitle.classList.add("error");
     }
 
+    // UPDATES AUTHOR PASS/FAIL VISUALS
     if(isValidAuthor) {
         document.querySelector("#authorLabel").textContent = "Author";
         dialogAuthor.classList.remove("error");
@@ -204,6 +197,7 @@ function dialogValidityCheck() {
         dialogAuthor.classList.add("error");
     }
 
+    // UPDATES PAGES PASS/FAIL VISUALS
     if(isValidPages){
         document.querySelector("#pageLabel").textContent = "Pages";
         dialogPages.classList.remove("error");
@@ -220,57 +214,56 @@ function dialogValidityCheck() {
 
     return (isValidTitle && isValidAuthor && isValidPages);
 }
-function dialogSaveClick() {
 
+// TRIGGERS WHEN DIALOG 'SAVE' IS CLICKED
+function dialogSaveClick() {
     if( dialogValidityCheck() ) {
         if(isEditingEntry) {
-            // update entry
+            // UPDATE LIBRARY DATABASE
             updateLibraryEntryFromDialog(editingEntryNum);
-            // update HTML
+            // HTML EXISTS, MODIFY IT WITH NEW DATA
             updateHTML(editingEntryNum );
         } else {
-            // add entry
+            // CREATE NEW ENTRY IN DATABASE
             let useDialog = true;
             editingEntryNum = addLibraryEntry(useDialog);
-            // write new HTML
+            // GENERATE NEW HTML
             addBookToPage(editingEntryNum);
-            // increaseBooks();
         }
-    
-        console.log("saving the book")
+        // CLOSE THE DIALOG AND UPDATE THE SIDE INFO
         dialogCloseClick();
-        calcReadPercent();
+        updateSideBookInfo();
     }    
 }
+
+// TRIGGERS WHEN THE CHECK MARK IS CLICKED (DIALOG ONLY)
 function dialogImgCheckClick() {
-    dialogIsRead.checked = ! dialogIsRead.checked;
+    // MANUALLY TRIGGER THE IS-READ CHECKMARK, THEN PROCEED AS NORMAL
+    dialogIsRead.checked = !dialogIsRead.checked;
     dialogIsReadClick();
 }
 
+// TRIGGERS WHEN THE IS-READ TOGGLE IS CHECKED (DIALOG ONLY)
 function dialogIsReadClick() {
-    
-    // if its the img, manually toggle things
-
-    console.log("toggled Read Checkbox", dialogIsRead.checked);
+    // UPDATE THE BIG CHECK MARK TO MATCH THE IS-READ CHECKED STATE
     let divCheck = document.querySelector("#isReadCheck");
-    let imgCheck = divCheck.querySelector("img");
-    
+    let imgCheck = divCheck.querySelector("img");    
     imgCheck.src = dialogIsRead.checked ? checkImgFile[0] : checkImgFile[1];
-
 }
 
+// ADDS DATA TO THE LIBRARY DATABASE
 function addLibraryEntry(useDialog) {
     serialID+=1;
     let id = serialID.toString();
+    // CREATE A NEW BLANK BOOK, ADD IT TO THE DATABASE
     let b = new book;
-    // libraryDB = { [id]:b };
     libraryDB[id] = b;
-    // bookCount+=1;
-    increaseBooks();
-
+    
     if (useDialog){
+        // USE THE DATA FROM THE DIALOG
         updateLibraryEntryFromDialog(id)
     } else {
+        // HARD CODED FIRST BOOK
         b.id = id;
         b.title = "The Book of Three";
         b.author = "Lloyd Alexander";
@@ -278,9 +271,12 @@ function addLibraryEntry(useDialog) {
         b.isRead = false;
         b.style = generateNewGradient();
     }
+    
+    updateSideBookInfo();
     return id;
 }
 
+// WRITE DIALOG DATA TO DATABASE
 function updateLibraryEntryFromDialog( id ) {
     let bookDB = libraryDB[id];
     bookDB.id = id;
@@ -289,27 +285,28 @@ function updateLibraryEntryFromDialog( id ) {
     bookDB.pages = dialogPages.value;
     bookDB.isRead = dialogIsRead.checked;
     bookDB.style = dialogCover.style.cssText;
-    // console.log(dialogIsRead.checked);
 }
 
+// UPDATE EXISTING HTML WITH NEW DATA FROM DATABASE
 function updateHTML(id) {
-    let bookHTML = document.querySelector("#id"+editingEntryNum);
+    // SELECT THE CORRECT HTML AND DATA
+    let bookHTML = document.querySelector("#id"+id);
     let bookDB = libraryDB[id];
 
     bookHTML.querySelector(".title").textContent = bookDB.title;
     bookHTML.querySelector(".author").textContent = bookDB.author;
-    console.log("book length! " + bookDB.pages.length);
 
+    // IF THE DATABASE PAGES ARE A NUMBER, APPEND 'PAGES'
     if (parseInt(bookDB.pages).toString() == bookDB.pages ) {
         bookHTML.querySelector(".pages").textContent = bookDB.pages + " pages";
     } else {
         bookHTML.querySelector(".pages").textContent = "";
     }
 
-    let divCover = bookHTML.querySelector(".cover")
-    divCover.style.cssText = bookDB.style;
+    // WRITE NEW GRADIENT
+    bookHTML.querySelector(".cover").style.cssText = bookDB.style;
 
-
+    // VISUALLY UPDATE CHECK MARK BASED ON IS-READ
     let imgCheck = bookHTML.querySelector(".check");
     if (bookDB.isRead){
         imgCheck.src = checkImgFile[0];
@@ -320,30 +317,41 @@ function updateHTML(id) {
     }
 }
 
+// CREATE NEW HTML AND WRITE IT TO THE PAGE
 function addBookToPage ( id ) {
-    // get html
-    // add to DOM
+    // GET DATA FROM LIBRARY
     let bookDB = libraryDB[id];
-    content.append( createHtmlBook( bookDB ) );
-    // bTitle, bAuthor, bPages, bRead, cColors
+
+    // MAIN DIV FOR ALL BOOKS
+    // APPEND CREATED DATA
+    document.querySelector('#content').append( createHtmlBook( bookDB ) );
+
+    // RE-ADD ANY LISTENERS FOR DELETE/EDIT/READ
     updateTinyButtonListeners();
 }
 
+// MAKES SURE ALL DELETE/EDIT/READ BUTTONS HAVE LISTENERS
 function updateTinyButtonListeners() {
     document.querySelectorAll(".button-action").forEach( bttn => bttn.addEventListener("click", bttnClick) );
     document.querySelectorAll(".check").forEach(chk => chk.addEventListener("click", checkToggle));
 }
-function checkToggle(e) {
-    let target = e.target;
-    console.log("clicked on: ", target);
 
+// TRIGGERS WHEN ANY CHECK MARK IS CLICKED (LIBRARY VIEW ONLY)
+function checkToggle(e) {
+    // TARGET THAT WILL BE REASSIGNED
+    let target = e.target;
+
+    // TRAVEL UP THE DOM UNTIL FIRST INSTANCE OF DIV WITH AN ID
+    // ONLY BOOKS SHOULD HAVE ID'S
     while(target.id == '') {
         target = target.parentNode;
     }
 
+    // GET THE ID, REASSIGN THE IS-READ STATUS IN THE DATABASE
     let id = target.id.slice(2);
     libraryDB[id].isRead = !libraryDB[id].isRead;
 
+    // VISUALLY MATCHES CHECK MARK TO DATA
     if (libraryDB[id].isRead) {
         e.target.classList.remove("hidden");
         e.target.src = checkImgFile[0];
@@ -352,39 +360,36 @@ function checkToggle(e) {
         e.target.src = checkImgFile[1];
     }
 
-    calcReadPercent();
+    updateSideBookInfo();
 };
+
+// TRIGGERS WHEN DELETE/EDIT IS CLICKED (LIBRARY VIEW ONLY)
 function bttnClick(e) {
-    // console.log(e.target);
+    // TARGET THAT WILL BE REASSIGNED
     let target = e.target;
 
+    // TRAVEL UP THE DOM UNTIL FIRST INSTANCE OF DIV WITH AN ID
+    // ONLY BOOKS SHOULD HAVE ID'S
     while(target.id == '') {
         target = target.parentNode;
-        // console.log(target);
-    }
-    
-    // for (let i = 0; i < 4; i++) {
-    //     target = target.parentNode;
-    // }
+    };
 
+    // TRIGGERS IF BUTTON WAS DELETE
     if(e.target.parentNode.classList.contains("delete")) {
-        // console.log(target);
-        // delete libraryDB[target.id.slice(2)];
-        decreaseBooks();
-
         transformBookToUndo( target );
-
-        // target.remove();
-
-        // ADD UNDO ELEMENT
-
     } else {
+        // TRIGGERS IF BUTTON WAS EDIT
         isEditingEntry = true;
         openDialog( target );
-    }
+    };
     
-}
+};
+
+
+// TRIGGERS WHEN DELETE IS PRESSED
+// REMOVES BOOK INFO AND ALLOWS FOR UNDO
 function transformBookToUndo(target){
+    // REMOVE BOOK HTML
     target.classList.remove("shadow");
     let cover = target.querySelector(".cover");
     cover.textContent = '';
@@ -394,7 +399,8 @@ function transformBookToUndo(target){
     target.querySelector(".title").remove();
     target.querySelector(".author").remove();
     target.querySelector(".pages").remove();
-
+    
+    // ADD UNDO HTML
     const divUndoWrapper = document.createElement("div");
     const btnUndo = document.createElement("button");
     const pUndo = document.createElement("p");
@@ -409,41 +415,43 @@ function transformBookToUndo(target){
     divUndoWrapper.appendChild(btnUndo);
     cover.appendChild(divUndoWrapper);
 
+    // SAVE ID
     undoID = target.id.slice(2);
+    // ADD EVENT LISTENER TO UNDO 
     btnUndo.addEventListener("click", undoDelete);
+    // MOUSE LEAVING AREA WILL CONFIRM DELETE
     cover.addEventListener("mouseleave", confirmDelete);
-    // 
-    // 
-    // 
 }
+
+// TRIGGERS WHEN MOUSE LEAVES UNDO AREA
 function confirmDelete( e ) {
-    console.log("delete it all!");
     let target = e.target.parentNode;
+
+    // REMOVE DATA FROM DATABASE
     delete libraryDB[target.id.slice(2)];
     target.remove();
-    decreaseBooks();
+    updateSideBookInfo();
 }
 
+// TRIGGERS WHEN UNDO BUTTON IS CLICKED
+// THIS REBUILDS THE HTML FOR AN EXISTING
+// BOOK THAT WAS DELETED
 function undoDelete() {
-
-    // console.log(target);
-    console.log("whoops, undo that");
-    console.log(`let's bring back ${undoID} to the page!`);
-    // console.log(target.id.slice(2));
-    
-
+    // CREATEHTMLBOOK RETURNS THE DIV FOR THE BOOK
+    // IT CAN BE IGNORED HERE BECAUSE IT WILL ATTEMPT
+    // TO APPEND IT DO AN ALREADY EXISTING BOOK IF POSSIBLE
+    // IN THIS CASE, THE UNDO HTML IS ENOUGH TO OVERWRITE
     let newHTML = createHtmlBook( libraryDB[undoID] );
     let target = document.querySelector("#id"+undoID);
     target.querySelector(".cover").remove();
 
     updateTinyButtonListeners();
-    increaseBooks();
+    updateSideBookInfo();
+};
 
-}
-
-function createHtmlSmallButton( file ) {
-    // CHECK IF FILE IS APPROVED
-    // ADD CHECKFILL CHECKOUTLINE CLOSE DELETE EDIT
+// CREATES EITHER DELETE OR EDIT HTML
+function createHtmlSmallButton( file ) {    
+    // CREATES THE FOLLOWING HTML
 
     //          <div class="delete button-sm button-action">
     //              <img class="icon-sm" src="images/delete.svg" alt="">
@@ -456,8 +464,10 @@ function createHtmlSmallButton( file ) {
 
     divIcon.classList.add(file, "button-sm", "button-action");
     divIcon.appendChild(imgIcon);
+    // RETURNS THE TOPMOST DIV
     return divIcon;
-}
+};
+
 
 function getTextHTML( text, classAttributes ) {
     const element = document.createElement("div");
@@ -471,7 +481,8 @@ function getTextHTML( text, classAttributes ) {
 }
 
 function createHtmlBook( bookDB ){
-    // NEW NEW NEW NEW
+    // CREATES THE FOLLOWING HTML
+    
     // <div class="book shadow" id="id0">
     //     <div class="cover filled">
     //         <div class="hidden">
@@ -485,31 +496,32 @@ function createHtmlBook( bookDB ){
     //     <div class="text-sm text-sub pages">514 pages</div>
     // </div>
 
-    
+    // CHECK IF THE BOOK ALREADY EXISTS
+    // IF IT EXISTS, WE WILL APPEND ALL THE NEW
+    // HTML TO THE EXISTING DIV
     let searchID = "#id" + bookDB.id;
     let book = document.querySelector(searchID);
     console.log( `searching for ${searchID}`);
 
     if(book) {
+        // ALREADY EXISTS
         console.log("already exists!");
-        book
     } else {
+        // IT DOES NOT EXIST, CREATE THE NEW ELEMENT
         console.log("create from scratch please");
         book = document.createElement("div");
-    }
+    };
 
-
-
+    // CREATES HTML AND ADDS CSS CLASSES
     book.classList.add("book", "shadow");
     book.id = "id" + bookDB.id;
     const cover = document.createElement("div");
     cover.classList.add("cover", "filled", "outline-w");
-    
 
     const upperIcons = document.createElement("div");
     upperIcons.classList.add("hidden");
 
-    const iconDelete = createHtmlSmallButton("delete"); //, "button-sm", "button-action");
+    const iconDelete = createHtmlSmallButton("delete");
     const iconEdit = createHtmlSmallButton("edit", "button-sm", "button-action");
     upperIcons.appendChild(iconDelete);
     upperIcons.appendChild(iconEdit);
@@ -519,8 +531,6 @@ function createHtmlBook( bookDB ){
     const imgCheck = document.createElement("img");
     imgCheck.classList.add("check", "hidden");
     let cImg = checkImgFile[1];
-    // let checkType = "checkOutline";
-    // console.log(b)
     if (bookDB.isRead) {
         cImg = checkImgFile[0];
         imgCheck.classList.remove("hidden");
@@ -532,17 +542,17 @@ function createHtmlBook( bookDB ){
     checkIcon.appendChild(imgCheck);
 
 
-    // const iconCheck = createHtmlSmallButton(checkType, "icon-lg");
+    // POPULATE THE TEXT
     const textTitle = getTextHTML(bookDB.title, ["text-md", "title"] );
     const textAuthor = getTextHTML(bookDB.author, ["text-sm", "author"] );
     const textPage = getTextHTML(bookDB.pages, ["text-sm", "text-sub", "pages"] );
     
+    // MAKE SURE PAGES ACTUALLY HAS DATA
     if ( parseInt(bookDB.pages).toString() == bookDB.pages ) {
         textPage.textContent = bookDB.pages + " pages";
     } else {
         textPage.textContent = "";
     }
-    // textPage.textContent = textPage.textContent + " pages";
     
     cover.style.cssText = bookDB.style;
     cover.appendChild(checkIcon);
@@ -550,5 +560,6 @@ function createHtmlBook( bookDB ){
     book.append(textTitle);
     book.append(textAuthor);
     book.append(textPage);
+    // RETURN THE DIV OF THE BOOK HTML
     return book;
 }
