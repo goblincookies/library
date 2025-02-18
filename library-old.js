@@ -15,14 +15,14 @@ let lightColors = ["#fbf8cc","#fde4cf","#ffcfd2","#f1c0e8","#cfbaf0","#a3c4f3",
     "#90dbf4","#8eecf5","#98f5e1","#b9fbc0"];
 
 // BOOK DATA STRUCTURE
-function book(id, title, author, pages, isRead, style) {
-    this.id = id;
-    this.title = title;
-    this.author = author;
-    this.pages=pages;
-    this.isRead = isRead;
-    this.style = style;
-};
+// function book(id, title, author, pages, isRead, style) {
+//     this.id = id;
+//     this.title = title;
+//     this.author = author;
+//     this.pages=pages;
+//     this.isRead = isRead;
+//     this.style = style;
+// };
 
 // SERIAL ID MAKES SURE EACH BOOK GETS A UNIQUE ID
 // IT'S USED AS HTML ID AND TO ACCESS THE LIBRARY DATABASE
