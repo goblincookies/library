@@ -2,8 +2,8 @@
 const libraryDB = new Database();
 const gradientGen = new GradientGenerator();
 const checkImgFile = [ "images/checkFill.svg", "images/checkOutline.svg"];
-// GLOBAL VAR
 
+// MANAGES THE DIALOG POPUP FOR INPUTING DATA
 const dialogManager = ( function () {
     let editID = -1;
 
@@ -15,8 +15,10 @@ const dialogManager = ( function () {
     const divCheck = document.querySelector('#isReadCheck');
     const dialogCover = document.querySelector('#dialog-cover');
 
+    // RECORDS THE ID THAT IS BEING EDITED
     const editingID = function (val) { editID = val };
 
+    // CONFORMS THE DIALOG INPUT FIELDS INTO A BOOK OBJECT
     const inputToBook = function() {
         let book = new Book();
         
@@ -31,6 +33,9 @@ const dialogManager = ( function () {
         return book;
     };
 
+    // NAIVE FORM CHECK SINCE THIS DOES NOT ACCESS
+    // A REAL DATABASE WITH BOOKS TO CROSS-REFERENCE,
+    // IT ONLY CHECKS THAT ALL INPUT FIELDS HAVE DATA
     const dialogValidityCheck = function() {
         let isValidTitle = false;
         let isValidAuthor = false;
@@ -49,6 +54,7 @@ const dialogManager = ( function () {
         return (isValidTitle && isValidAuthor && isValidPages);
     };
 
+    // UPDATES THE VISUAL HTML/CSS FOR THE INPUT FIELDS
     const passFailVisuals = function( boolcheck, field ) {
 
         let label = document.querySelector("#" + field + "Label" );
@@ -71,8 +77,11 @@ const dialogManager = ( function () {
         };
     };
 
+    // TRIGGERS WHEN THE USER CLICKS THE (+) RECTANGLE
+    // OPENS THE DIALOG AND POPULATES THE INPUT FIELDS
     const open = function() {
-
+        // THE DATABASE WILL RETURN THE BOOK INFORMATION IF IT'S BEEN
+        // RECORDED, OTHERWISE THE DATA WILL BE EMPTY STRINGS.
         let book = libraryDB.getBook( editID );
         dialogCover.style.cssText = book.style;
         dialogTitle.value = book.title;
@@ -86,38 +95,49 @@ const dialogManager = ( function () {
         dialog.showModal();
     };
 
+    // TRIGGERS WHEN THE USER CLICKS 'SAVE'
     const save = function() {
+        // CHECKS IF THE INFO IS APPROPRIATE
         if (dialogValidityCheck() ) {
-
+            // CREATE A BOOK OBJECT
             let book = inputToBook();
+            // UPDATE THE DATABASE
             libraryDB.writeBook(book);
-            console.log(book);
+            // UPDATE THE HTML
             updateHTML( book );
-
+            // CLOSE THE DIALOG
             close();
-        }
+        };
     };
 
+    // CLOSE THE DIALOG WINDOW
+    // THIS DOES NOT SAVE ANYTHING
     const close = function() {
         editID = -1;
         updateSideBookInfo();
         dialog.close();
     };
+
+    // DIALOG IS CLOSED WITH ESCAPE BUTTON
     const escape = function() {
         editID = -1;
         updateSideBookInfo();
     };
 
-    const isRead= function() {
+    // TRIGGERS WHEN THE IS-READ TOGGLE IS CHECKED (DIALOG ONLY)
+    const isRead = function() {
         // UPDATE THE BIG CHECK MARK TO MATCH THE IS-READ CHECKED STATE
         let checkImg = divCheck.querySelector("img");    
         checkImg.src = dialogIsRead.checked ? checkImgFile[0] : checkImgFile[1];
     };
 
+    // TRIGGERS WHEN THE CHECK MARK IS CLICKED (DIALOG ONLY)
     const checkImg = function() {
         dialogIsRead.checked = !dialogIsRead.checked;
         isRead();
     };
+
+    // GENERATE AND APPLY A NEW GRADIENT
     const gradient = function() {
         dialogCover.classList.remove("filled");
         dialogCover.style.removeProperty("background");
@@ -127,7 +147,7 @@ const dialogManager = ( function () {
     return { open, save, close, isRead, checkImg, gradient, editingID, escape }
 })();
 
-
+// RUNS WHEN FIRST LOADED
 function setup() {
     // WRITE A PLACEHOLDER BOOK WHEN FIRST LOADED
     let book = new Book();
@@ -139,11 +159,13 @@ function setup() {
 
 };
 
+// UPDATES ANY LISTENERS
 function listenersUpdate() {
     document.querySelectorAll(".button-action").forEach( bttn => bttn.addEventListener("click", bttnClick) );
     document.querySelectorAll(".check").forEach(chk => chk.addEventListener("click", checkToggle));
 };
 
+// CREATE INITIAL LISTENERS
 function listenersCreate() {
 
     document.querySelector('#addBook').addEventListener("click", dialogManager.open );
@@ -159,35 +181,40 @@ function listenersCreate() {
     updateSideBookInfo();
 };
 
-
-
+// TRIGGERS WHEN DELETE/EDIT IS CLICKED (LIBRARY VIEW ONLY)
 function bttnClick(e) {
+    // TARGET THAT WILL BE REASSIGNED
     let target = e.currentTarget;
 
+    // TRAVEL UP THE DOM UNTIL FIRST INSTANCE OF DIV WITH AN ID
+    // ONLY BOOKS SHOULD HAVE ID'S
     while(target.id == '') {
         target = target.parentNode;
     };
 
+    // TRIGGERS IF BUTTON WAS DELETE
     if(e.currentTarget.classList.contains("delete")) {
-        // transformBookToUndo( target );
         transformBookToUndo( target );
     } else {
         // TRIGGERS IF BUTTON WAS EDIT
         console.log(`editing ${target.id}`);
         dialogManager.editingID( target.id);
         dialogManager.open();
-        // isEditingEntry = true;
-        // openDialog( target );
     };
 };
 
+// TRIGGERS WHEN ANY CHECK MARK IS CLICKED (LIBRARY VIEW ONLY)
 function checkToggle( e ) {
+    // TARGET THAT WILL BE REASSIGNED
     let target = e.currentTarget;
 
+    // TRAVEL UP THE DOM UNTIL FIRST INSTANCE OF DIV WITH AN ID
+    // ONLY BOOKS SHOULD HAVE ID'S
     while(target.id == '') {
         target = target.parentNode;
     };
     
+    // UPDATE THE DATABASE TO MATCH THE NEW IS-READ STATUS
     let book = libraryDB.getBook(target.id);
     book.isRead = !book.isRead;
     libraryDB.writeBook(book);
@@ -219,6 +246,7 @@ function updateSideBookInfo(){
     percentRead.textContent = readCount > 0 ? Math.floor((readCount/count)*100) + "%" : "0%";
 };
 
+// SIMPLE HELPER TO CREATE AN ELEMENT AND ASSIGN AN ARRAY OF CLASSES
 function createHTML( type, classes) {
     let element = document.createElement( type );
     for(const el of classes) {
@@ -294,13 +322,12 @@ function undoDelete() {
     updateSideBookInfo();
 };
 
-
+// CALLED WHEN ADDING A NEW BOOK
+// OR MODIFYING AN EXISTING BOOK
 function updateHTML( book ) {
 
     if (document.getElementById(book.id)) {
-
-        // EDITING!
-        console.log("editing!");
+        // EDITING A BOOK!
         let bookHTML = document.getElementById(book.id);
         bookHTML.querySelector(".title").textContent = book.title;
         bookHTML.querySelector(".author").textContent = book.author;
@@ -326,6 +353,7 @@ function updateHTML( book ) {
     listenersUpdate();
 };
 
+// CREATES THE BOOK HTML
 function createHtml_Book( book ){
     // CREATES THE FOLLOWING HTML
     

@@ -1,4 +1,6 @@
+// THE BOOK OBJECT
 class Book {
+
     #bookID = -1;
     #title = "The Book of Three";
     #author = "Lloyd Alexander";
@@ -27,6 +29,7 @@ class Book {
     set style (val) { this.#style = val; };
     get style () { return this.#style; };
 
+    // RECORDS MULTIPLE FIELDS AT A TIME FOR SIMPLICITY
     recordInfo ( title, author, pages, isRead) {
         this.#title = title;
         this.#author = author;

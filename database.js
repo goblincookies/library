@@ -1,13 +1,11 @@
+// MANAGES THE DATABASE
 class Database {
 
     #searialID = 0;
     #database = {};
     #undoID = -1;
-    constructor () {
 
-    };
-
-
+    // VERIFIES THAT THE DATATYPE IS OF THE BOOK CLASS
     isNotABook( val ) {
         if ( val instanceof Book) { return false; };
 
@@ -15,6 +13,7 @@ class Database {
         return true;
     };
 
+    // WRITES TO DATABASE
     writeBook ( book ) {
         if( this.isNotABook( book ) ) { return 0; };
 
@@ -28,12 +27,7 @@ class Database {
         this.#database[book.id] = book;
     };
 
-    removeBook( book ) {
-        if( this.isNotABook( book ) ) { return 0; };
-
-        delete this.#database[ book.id ];
-    };
-
+    // CREATES A BLANK BOOK WITH NO INFORMATION
     ghostBook () {
         let ghostBook = new Book();
         let gradGen = new GradientGenerator();
@@ -42,6 +36,7 @@ class Database {
         return ghostBook;
     };
 
+    // RETURNS THE BOOK FLAGGED FOR DELETION
     getUndoBook( ) {
         if (this.#database[ this.#undoID ] ) { return this.#database[ this.#undoID ] };
 
@@ -50,6 +45,8 @@ class Database {
         return this.ghostBook();
     };
 
+    // RETURNS THE SPECIFIED BOOK FROM THE DATABASE
+    // IF IT CANNOT BE FOUND, IT RETURNS AN EMPTY BOOK
     getBook( id ) {
         if (this.#database[id]) { return this.#database[id] }
 
@@ -58,18 +55,23 @@ class Database {
         return this.ghostBook();
     };
 
+    // DELETES A SPECIFIC ENTRY
     deleteEntry( id ) {
         if (this.#database[id]) {
             this.#undoID = -1;
             delete this.#database[id];
+            return 0;
         };
         // DOESN'T EXIST
         console.log(`database can't find that book(${id}), maybe it's already deleted?`);
     };
 
+    // RETURNS THE SIZE OF THE DATABASE
     count () {
-        return Object.keys(this.#database).length; }
+        return Object.keys(this.#database).length;
+    };
 
+    // RETURNS THE NUMBER OF OBJECTS WITH THE "ISREAD" PROPERTY AS TRUE
     readCount () {
         let readCount = 0;
 
@@ -81,18 +83,7 @@ class Database {
         return readCount;
     };
 
-    set undoID (val) {
-        console.log(`setting undoID to ${val}`);
-        this.#undoID = val};
+    // SAVES THE ID; FLAGGED TO BE DELETED
+    set undoID (val) { this.#undoID = val };
     get undoID () { return this.#undoID };
 };
-
-// let book = new Book();
-// let gradientGen = new GradientGenerator();
-// let db = new Database();
-// book.style = gradientGen.genNew();
-
-// // console.log(book.id)
-
-// // db.writeBook(9);
-// db.writeBook(book);
