@@ -8,7 +8,7 @@
 }
 body {
     background-color: #e1e1e1;  
-    width: max(50%, min(100%, 70vh ));
+    width: max(50%, min(100%, 70rem ));
     margin-left: auto;
     margin-right: auto;
 }
@@ -81,7 +81,7 @@ h1 {
 }
 .text-lg{
     font-weight: 800;
-    font-size: 2.5rem;
+    font-size: 2.0rem;
 }
 .text-md{
     font-weight: 700;
