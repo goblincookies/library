@@ -2,6 +2,7 @@ class Database {
 
     #searialID = 0;
     #database = {};
+    #undoID = -1;
     constructor () {
 
     };
@@ -33,16 +34,37 @@ class Database {
         delete this.#database[ book.id ];
     };
 
-    getBook( id ) {
-        if (this.#database[id]) { return this.#database[id] }
-
-        // DOESN'T EXIST
-        console.log(`database can't find that book(${id}), sending a blank one`);
+    ghostBook () {
         let ghostBook = new Book();
         let gradGen = new GradientGenerator();
         ghostBook.style = gradGen.getNewStyleAsString();
         ghostBook.recordInfo("", "", "", false);
         return ghostBook;
+    };
+
+    getUndoBook( ) {
+        if (this.#database[ this.#undoID ] ) { return this.#database[ this.#undoID ] };
+
+        //  DOESN'T EXIST
+        console.log(`database can't find that book(${this.#undoID}), sending a blank one`);
+        return this.ghostBook();
+    };
+
+    getBook( id ) {
+        if (this.#database[id]) { return this.#database[id] }
+
+        // DOESN'T EXIST
+        console.log(`database can't find that book(${id}), sending a blank one`);
+        return this.ghostBook();
+    };
+
+    deleteEntry( id ) {
+        if (this.#database[id]) {
+            this.#undoID = -1;
+            delete this.#database[id];
+        };
+        // DOESN'T EXIST
+        console.log(`database can't find that book(${id}), maybe it's already deleted?`);
     };
 
     count () {
@@ -57,7 +79,12 @@ class Database {
             }
         };
         return readCount;
-    }
+    };
+
+    set undoID (val) {
+        console.log(`setting undoID to ${val}`);
+        this.#undoID = val};
+    get undoID () { return this.#undoID };
 };
 
 // let book = new Book();

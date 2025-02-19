@@ -170,6 +170,7 @@ function bttnClick(e) {
 
     if(e.currentTarget.classList.contains("delete")) {
         // transformBookToUndo( target );
+        transformBookToUndo( target );
     } else {
         // TRIGGERS IF BUTTON WAS EDIT
         console.log(`editing ${target.id}`);
@@ -225,6 +226,75 @@ function createHTML( type, classes) {
     };
     return element;
 };
+
+// TRIGGERS WHEN DELETE IS PRESSED
+// REMOVES BOOK INFO AND ALLOWS FOR UNDO
+function transformBookToUndo(target){
+
+    // REMOVE BOOK HTML
+    target.classList.remove("shadow");
+    let cover = target.querySelector(".cover");
+    cover.textContent = '';
+    cover.classList.remove("filled","outline-w");
+    cover.classList.add("blank");
+    cover.style.cssText="";
+    target.querySelector(".title").remove();
+    target.querySelector(".author").remove();
+    target.querySelector(".page").remove();
+    
+    // ADD UNDO HTML
+    const undoWrapperDiv = createHTML("div", ["undo-wrapper"]);
+    // const divUndoWrapper = document.createElement("div");
+    const undoButton = createHTML("button", ["undo"]);
+    // const btnUndo = document.createElement("button");
+
+    const undoP = document.createElement("p");
+    undoP.textContent="undo";
+    const undoImg = document.createElement("img");
+
+    // divUndoWrapper.classList.add("undo-wrapper");
+    undoButton.classList.add("undo");
+    undoImg.src = "images/undo.svg";
+    undoButton.appendChild(undoP);
+    undoButton.appendChild(undoImg);
+    undoWrapperDiv.appendChild(undoButton);
+    cover.appendChild(undoWrapperDiv);
+
+    // SAVE ID
+    libraryDB.undoID = target.id;
+    // ADD EVENT LISTENER TO UNDO 
+    undoButton.addEventListener("click", undoDelete);
+    // MOUSE LEAVING AREA WILL CONFIRM DELETE
+    cover.addEventListener("mouseleave", confirmDelete);
+};
+
+// TRIGGERS WHEN MOUSE LEAVES UNDO AREA
+function confirmDelete( e ) {
+    let target = e.currentTarget.parentNode;
+
+    // REMOVE DATA FROM DATABASE
+    libraryDB.deleteEntry( target.id );
+    target.remove();
+    updateSideBookInfo();
+};
+
+// TRIGGERS WHEN UNDO BUTTON IS CLICKED
+// THIS REBUILDS THE HTML FOR AN EXISTING
+// BOOK THAT WAS DELETED
+function undoDelete() {
+    // CREATEHTMLBOOK RETURNS THE DIV FOR THE BOOK
+    // IT CAN BE IGNORED HERE BECAUSE IT WILL ATTEMPT
+    // TO APPEND IT DO AN ALREADY EXISTING BOOK IF POSSIBLE
+    // IN THIS CASE, THE UNDO HTML IS ENOUGH TO OVERWRITE
+    let newHTML = createHtml_Book( libraryDB.getUndoBook() );
+    let target = document.getElementById( libraryDB.undoID );
+    target.querySelector(".cover").remove();
+
+    listenersUpdate();
+    updateSideBookInfo();
+};
+
+
 function updateHTML( book ) {
 
     if (document.getElementById(book.id)) {
